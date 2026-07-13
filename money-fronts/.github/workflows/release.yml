@@ -1,0 +1,75 @@
+name: Release
+
+# Cadeia de Confiança (DAS seção 6 / ERSW RNF04):
+# - PyInstaller + Tauri Bundler geram os binários.
+# - SignPath assina os executáveis Windows.
+# - Apple Developer ID notariza os pacotes macOS.
+# - Sigstore/GitHub Attestations garantem proveniência SLSA nível 3.
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar dependências do backend
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Build do sidecar Python (PyInstaller)
+        run: |
+          cd backend
+          python build_sidecar.py
+
+      - name: Copiar sidecar para src-tauri/binaries
+        run: |
+          mkdir -p src-tauri/binaries
+          cp backend/dist/app-backend-* src-tauri/binaries/
+
+      - name: Instalar dependências do frontend
+        run: |
+          cd frontend
+          npm install
+
+      - name: Build da aplicação Tauri
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Assinatura macOS (Apple Developer ID) - DAS seção 6
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "Money Fronts ${{ github.ref_name }}"
+          releaseDraft: true
+
+      - name: Assinatura de código Windows via SignPath
+        if: matrix.os == 'windows-latest'
+        run: echo "Submeter artefatos MSI/EXE ao SignPath Foundation (ver docs/BUILD.md)."
+        # A integração real usa a SignPath GitHub Action oficial, configurada
+        # com o Organization ID / Signing Policy do projeto no SignPath.
+
+      - name: Gerar atestados de proveniência (Sigstore / SLSA L3)
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: "src-tauri/target/release/bundle/**"

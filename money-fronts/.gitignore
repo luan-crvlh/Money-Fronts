@@ -1,0 +1,25 @@
+# Node / Vite
+frontend/node_modules/
+frontend/dist/
+
+# Rust / Tauri
+src-tauri/target/
+src-tauri/binaries/
+
+# Python
+backend/__pycache__/
+backend/**/__pycache__/
+backend/.venv/
+backend/dist/
+backend/build/
+backend/*.spec
+*.pyc
+
+# Banco de dados local (nunca versionar dados financeiros!)
+*.db
+*.sqlite
+
+# Chaves/certificados
+*.pem
+*.p12
+*.mobileprovision
