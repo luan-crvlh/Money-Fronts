@@ -1,13 +1,25 @@
-fastapi==0.115.6
-uvicorn[standard]==0.32.1
-sqlalchemy==2.0.36
-pydantic==2.10.3
-keyring==25.5.0
-alembic==1.14.0
+# IMPORTANTE: usamos limites mínimos (>=) em vez de pins exatos (==).
+# Pins exatos antigos não têm wheel pré-compilado para versões novas do
+# Python (ex.: pydantic-core é uma extensão Rust; sem wheel, o pip tenta
+# compilar do zero e falha). Deixar o pip escolher a versão mais recente
+# compatível evita esse problema à medida que novas versões do Python saem.
+fastapi>=0.115
+uvicorn[standard]>=0.32
+sqlalchemy>=2.0.36,<2.1
+pydantic>=2.11,<3
+keyring>=25.5
+alembic>=1.14
 
-# SQLCipher (DAS seção 5). Requer libsqlcipher instalada no SO de build.
-# Em Windows/macOS/Linux use o binário/wheel apropriado; ver docs/BUILD.md.
-pysqlcipher3==1.2.0
+# SQLCipher: pysqlcipher3 (pacote original citado no DAS) está ABANDONADO
+# desde 2019 e nunca publicou wheel pré-compilado para nenhuma versão do
+# Python — só existe .tar.gz de código-fonte, que exige compilar contra
+# libsqlcipher manualmente. Usamos o fork mantido (coleifer/sqlcipher3),
+# que publica wheels self-contained (sem dependências externas) inclusive
+# para Python 3.14. O dialeto sqlite+pysqlcipher:// do SQLAlchemy já
+# procura por "sqlcipher3" automaticamente antes de "pysqlcipher3", então
+# nenhuma mudança de código é necessária em app/database.py.
+sqlcipher3-binary>=0.6.0
 
-# Empacotamento standalone (DAS seção 4)
-pyinstaller==6.11.1
+# Empacotamento standalone (DAS seção 4). >=6.15 é a primeira série com
+# suporte formal ao Python 3.14.
+pyinstaller>=6.15

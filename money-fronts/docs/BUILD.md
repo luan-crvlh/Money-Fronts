@@ -7,11 +7,16 @@ arquitetura Sidecar Pattern definida no DAS.
 
 - Node.js 20+ e um gestor de pacotes (`pnpm` ou `npm`)
 - Rust stable + toolchain do Tauri v2 (`cargo install tauri-cli` opcional)
-- Python 3.12+
-- `libsqlcipher` instalada no SO (necessária para compilar `pysqlcipher3`)
-  - Windows: usar um wheel pré-compilado ou vcpkg
-  - macOS: `brew install sqlcipher`
-  - Linux (Debian/Ubuntu): `sudo apt install libsqlcipher-dev`
+- Python 3.12, 3.13 ou 3.14 (o projeto usa `sqlcipher3-binary`, que publica
+  wheels self-contained — **não é necessário instalar `libsqlcipher` no
+  sistema**, ao contrário de versões antigas deste documento)
+
+> **Nota sobre versão do Python:** o backend funciona em qualquer versão a
+> partir da 3.12. Se você usa uma versão muito recente do Python (ex.: recém
+> lançada) e uma instalação falhar por falta de wheel, normalmente é questão
+> de dias/semanas até os mantenedores publicarem o build — nesse meio tempo,
+> uma versão LTS-like como 3.12 ou 3.13 costuma ter cobertura mais ampla no
+> ecossistema (PyInstaller, extensões C de terceiros etc.).
 
 ## 2. Desenvolvimento local
 

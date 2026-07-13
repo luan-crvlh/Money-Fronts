@@ -1,1 +1,0 @@
-{"default":{"identifier":"default","description":"Permissões padrão da janela principal do Money Fronts","local":true,"windows":["main"],"permissions":["core:default",{"identifier":"shell:allow-execute","allow":[{"args":true,"name":"binaries/app-backend","sidecar":true}]}]}}
