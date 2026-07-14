@@ -4,7 +4,7 @@ Schemas Pydantic (validação de tipos - RF01 justifica uso do FastAPI/Pydantic)
 from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models import TransactionType, BudgetGroup
+from app.models import TransactionType, BudgetGroup, AccountType
 
 
 # ---------- Category ----------
@@ -29,6 +29,8 @@ class CategoryOut(CategoryBase):
 # ---------- Account ----------
 class AccountBase(BaseModel):
     name: str = Field(min_length=1, max_length=80)
+    institution: str | None = Field(default=None, max_length=100)
+    account_type: AccountType = AccountType.CHECKING
     initial_balance: float = 0
 
 

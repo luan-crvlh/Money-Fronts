@@ -33,6 +33,14 @@ class BudgetGroup(str, enum.Enum):
     SAVINGS = "savings"   # Investimentos / amortização (20%)
 
 
+class AccountType(str, enum.Enum):
+    CHECKING = "checking"
+    SAVINGS = "savings"
+    CREDIT = "credit"
+    CASH = "cash"
+    INVESTMENT = "investment"
+
+
 class Category(Base):
     __tablename__ = "categories"
 
@@ -59,11 +67,15 @@ class Category(Base):
 
 
 class Account(Base):
-    """Conta corrente/carteira, necessária para RF01 (transferências entre contas)."""
+    """Conta financeira para registrar origem/destino de fluxos (RF01)."""
     __tablename__ = "accounts"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
     name: Mapped[str] = mapped_column(String(80), nullable=False)
+    institution: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    account_type: Mapped[AccountType] = mapped_column(
+        Enum(AccountType), default=AccountType.CHECKING, nullable=False
+    )
     initial_balance: Mapped[float] = mapped_column(Numeric(14, 2), default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 

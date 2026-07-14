@@ -94,8 +94,21 @@ dialog input, dialog select { background: var(--bg); border: 1px solid var(--bor
 .error { color: var(--negative); }
 
 .form-hint { margin: 0; color: var(--muted); font-size: .78rem; }
-.transaction-dialog { max-height: min(82vh, 650px); max-width: min(94vw, 440px); padding-right: .5rem; }
-.transaction-dialog form { max-height: calc(min(82vh, 650px) - 3rem); overflow-y: auto; padding-right: .7rem; }
+.transaction-dialog {
+  width: min(94vw, 440px);
+  height: min(82vh, 650px);
+  max-height: 82vh;
+  overflow: hidden;
+  padding-right: .5rem;
+}
+.transaction-dialog form {
+  height: 100%;
+  min-height: 0;
+  overflow-y: scroll;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding-right: .7rem;
+}
 .transaction-dialog form::-webkit-scrollbar, .transactions-container::-webkit-scrollbar { width: 8px; }
 .transaction-dialog form::-webkit-scrollbar-track, .transactions-container::-webkit-scrollbar-track { background: var(--bg); border-radius: 6px; }
 .transaction-dialog form::-webkit-scrollbar-thumb, .transactions-container::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 6px; }
@@ -126,6 +139,14 @@ dialog input, dialog select { background: var(--bg); border: 1px solid var(--bor
 .recurring-card p, .recurring-card small { color: var(--muted); margin: .25rem 0 0; font-size: .82rem; }
 .recurring-icon { display: grid; place-items: center; height: 34px; width: 34px; border-radius: 10px; background: rgba(99,102,241,.16); color: #a5b4fc; font-size: 1.25rem; }
 .recurring-value { font-weight: 700; }
+
+.accounts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: .85rem; }
+.account-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .85rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+.account-card p { margin: .2rem 0 .45rem; font-size: .82rem; color: var(--muted); }
+.account-symbol { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 11px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-weight: 700; }
+.account-balance { text-align: right; font-weight: 700; color: var(--positive); }
+.account-balance small { display: block; color: var(--muted); font-size: .68rem; font-weight: 400; margin-top: .2rem; }
+.account-card .btn-delete { grid-column: 3; }
 
 /* Contêiner principal das transações */
 .transactions-container {
@@ -197,4 +218,5 @@ dialog input, dialog select { background: var(--bg); border: 1px solid var(--bor
   .category-bar-track { grid-column: 1 / 2; }
   .recurring-card { grid-template-columns: auto 1fr auto; }
   .recurring-card .btn-delete { grid-column: 3; }
+  .account-card { grid-template-columns: auto 1fr auto; }
 }

@@ -56,6 +56,7 @@ export const api = {
   accounts: {
     list: () => request("/api/accounts"),
     create: (data) => request("/api/accounts", { method: "POST", body: JSON.stringify(data) }),
+    remove: (id) => request(`/api/accounts/${id}`, { method: "DELETE" }),
   },
   transactions: {
     list: (params = {}) => {

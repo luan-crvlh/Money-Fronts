@@ -58,7 +58,7 @@ money-fronts/
 | RF02 (Categorias + seed inicial) | `backend/app/seed.py`, `routers/categories.py` |
 | RF03 (Monitorização orçamental) | `routers/budgets.py` (`/progress`) |
 | RF04 (Dashboard + Regra 50/30/20 + Safe-to-Spend) | `routers/dashboard.py`, `Dashboard.js` |
-| RF05 (Recorrência) | `models.RecurringRule` (base de dados pronta; job de agendamento é próximo passo) |
+| RF05 (Recorrência) | `routers/recurring.py`, geração idempotente no arranque e tela `Recurring.js` |
 | RNF01 (Criptografia AES-256 em repouso) | `database.py` (SQLCipher + PRAGMA key) |
 | RNF02 (Offline-first) | Nenhuma chamada de rede externa em todo o backend |
 | RNF03 (Keyring nativo) | `security.py` |
@@ -67,7 +67,7 @@ money-fronts/
 | RNF06 (Sidecar Pattern / desacoplamento) | Estrutura completa de 3 processos |
 | RN1 (Ciclo de vida gracioso) | `src-tauri/src/lib.rs` (spawn/kill), `main.js` (health check) |
 | RN2 (Foreign keys + cascade) | `database.py` (PRAGMA), `models.py` (`ondelete`) |
-| RN3 (Migrações silenciosas) | `backend/alembic/` |
+| RN3 (Migrações silenciosas) | `backend/alembic/` + `run_migrations()` no arranque do sidecar |
 
 ## Próximos passos sugeridos (não cobertos neste scaffold inicial)
 

@@ -11,14 +11,16 @@ Entrypoint do Sidecar Python (DAS seção 4).
 """
 import argparse
 import logging
+import sys
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.database import Base, engine, SessionLocal
+from app.database import SessionLocal
 from app.security import zeroize_key
 from app.seed import seed_default_categories
 from app.routers import categories, accounts, transactions, budgets, dashboard, recurring
@@ -29,11 +31,21 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("money_fronts")
 
 
+def run_migrations() -> None:
+    """Atualiza o esquema local sem intervenção do usuário (RN3)."""
+    from alembic import command
+    from alembic.config import Config
+
+    root = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
+    config = Config(str(root / "alembic.ini"))
+    config.set_main_option("script_location", str(root / "alembic"))
+    command.upgrade(config, "head")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: cria tabelas (dev) e semeia categorias padrão (RF02).
-    # Em produção, o schema é evoluído via Alembic (RN3 do ERSW).
-    Base.metadata.create_all(bind=engine)
+    # RN3: migrações versionadas são aplicadas antes de acessar os dados.
+    run_migrations()
     db = SessionLocal()
     try:
         seed_default_categories(db)

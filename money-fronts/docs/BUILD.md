@@ -24,7 +24,7 @@ arquitetura Sidecar Pattern definida no DAS.
 # Backend (modo dev, sem SQLCipher compilado -> usa sqlite puro)
 cd backend
 python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-v2.txt --upgrade
 export MONEY_FRONTS_DEV_PLAINTEXT_DB=1
 python -m app.main --port 8756
 
@@ -43,7 +43,7 @@ cargo tauri dev
 ```bash
 # 1) Empacotar o sidecar Python como binário standalone
 cd backend
-pip install -r requirements.txt
+pip install -r requirements-v2.txt --upgrade
 python build_sidecar.py
 mkdir -p ../src-tauri/binaries
 cp dist/app-backend-* ../src-tauri/binaries/
@@ -67,9 +67,10 @@ alembic revision --autogenerate -m "descrição da mudança"
 alembic upgrade head
 ```
 
-Em produção, o binário do sidecar deve rodar `alembic upgrade head`
-automaticamente no arranque (RN3 do ERSW) — ver TODO em `app/main.py`
-para conectar isso ao lifespan quando o pipeline de release for finalizado.
+O sidecar executa `alembic upgrade head` automaticamente no arranque (RN3),
+antes de abrir qualquer sessão de dados. Para instalações antigas do scaffold,
+a primeira migração preserva as tabelas já existentes e acrescenta os campos
+necessários às contas.
 
 ## 5. Cadeia de confiança (Supply Chain Security)
 

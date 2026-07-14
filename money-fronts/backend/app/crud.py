@@ -43,6 +43,15 @@ def create_account(db: Session, data: schemas.AccountCreate) -> models.Account:
     return obj
 
 
+def delete_account(db: Session, account_id: str) -> bool:
+    obj = db.get(models.Account, account_id)
+    if not obj:
+        return False
+    db.delete(obj)
+    db.commit()
+    return True
+
+
 # ---------- Transactions ----------
 def list_transactions(
     db: Session,
