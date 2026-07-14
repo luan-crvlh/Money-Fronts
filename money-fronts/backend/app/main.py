@@ -21,7 +21,9 @@ from app.config import settings
 from app.database import Base, engine, SessionLocal
 from app.security import zeroize_key
 from app.seed import seed_default_categories
-from app.routers import categories, accounts, transactions, budgets, dashboard
+from app.routers import categories, accounts, transactions, budgets, dashboard, recurring
+from app import crud
+from datetime import date
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("money_fronts")
@@ -35,6 +37,9 @@ async def lifespan(app: FastAPI):
     db = SessionLocal()
     try:
         seed_default_categories(db)
+        # RF05: materializa os lançamentos previstos do mês, sem duplicá-los.
+        today = date.today()
+        crud.generate_recurring_transactions(db, today.month, today.year)
     finally:
         db.close()
     logger.info("Money Fronts backend pronto.")
@@ -61,6 +66,7 @@ app.include_router(accounts.router)
 app.include_router(transactions.router)
 app.include_router(budgets.router)
 app.include_router(dashboard.router)
+app.include_router(recurring.router)
 
 
 @app.get("/health")

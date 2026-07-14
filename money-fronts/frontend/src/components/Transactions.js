@@ -32,13 +32,13 @@ export async function renderTransactions(container) {
     <div class="toolbar">
       <button id="new-transaction-btn" class="btn-primary">+ Nova Transação</button>
     </div>
-    <table class="data-table">
+    <div class="transactions-container"><table class="data-table">
       <thead>
         <tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Conta</th><th>Valor</th><th></th></tr>
       </thead>
       <tbody>${rows || `<tr><td colspan="6" class="muted">Nenhuma transação registada ainda.</td></tr>`}</tbody>
-    </table>
-    <dialog id="transaction-dialog">
+    </table></div>
+    <dialog id="transaction-dialog" class="transaction-dialog">
       <form id="transaction-form" method="dialog">
         <h3>Nova Transação</h3>
         <label>Descrição <input name="description" required /></label>
@@ -61,6 +61,7 @@ export async function renderTransactions(container) {
             ${accounts.map((a) => `<option value="${a.id}">${a.name}</option>`).join("")}
           </select>
         </label>
+        <p class="form-hint">Movimentos recorrentes podem ser configurados na seção Recorrências.</p>
         <div class="dialog-actions">
           <button type="button" id="cancel-btn">Cancelar</button>
           <button type="submit" class="btn-primary">Salvar</button>

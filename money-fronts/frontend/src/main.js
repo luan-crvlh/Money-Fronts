@@ -2,11 +2,13 @@ import { waitForBackendHealth } from "./api.js";
 import { renderDashboard } from "./components/Dashboard.js";
 import { renderTransactions } from "./components/Transactions.js";
 import { renderCategories } from "./components/Categories.js";
+import { renderRecurring } from "./components/Recurring.js";
 
 const routes = {
   dashboard: { label: "Dashboard", render: renderDashboard },
   transactions: { label: "Transações", render: renderTransactions },
   categories: { label: "Categorias", render: renderCategories },
+  recurring: { label: "Recorrências", render: renderRecurring },
 };
 
 function renderShell() {

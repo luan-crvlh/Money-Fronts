@@ -93,6 +93,58 @@ def delete_transaction(db: Session, transaction_id: str) -> bool:
     return True
 
 
+# ---------- Recurring rules ----------
+def list_recurring_rules(db: Session) -> list[models.RecurringRule]:
+    return db.query(models.RecurringRule).order_by(models.RecurringRule.description).all()
+
+
+def create_recurring_rule(db: Session, data: schemas.RecurringRuleCreate) -> models.RecurringRule:
+    obj = models.RecurringRule(**data.model_dump())
+    db.add(obj)
+    db.commit()
+    db.refresh(obj)
+    return obj
+
+
+def delete_recurring_rule(db: Session, rule_id: str) -> bool:
+    obj = db.get(models.RecurringRule, rule_id)
+    if not obj:
+        return False
+    db.delete(obj)
+    db.commit()
+    return True
+
+
+def generate_recurring_transactions(db: Session, month: int, year: int) -> int:
+    """Cria somente os lançamentos ainda ausentes para cada regra ativa no mês."""
+    created = 0
+    for rule in db.query(models.RecurringRule).filter(models.RecurringRule.active.is_(True)).all():
+        occurred_on = date(year, month, rule.day_of_month)
+        exists = (
+            db.query(models.Transaction.id)
+            .filter(
+                models.Transaction.recurrence_rule_id == rule.id,
+                models.Transaction.occurred_on == occurred_on,
+            )
+            .first()
+        )
+        if not exists:
+            db.add(models.Transaction(
+                description=rule.description,
+                amount=rule.amount,
+                type=rule.type,
+                occurred_on=occurred_on,
+                category_id=rule.category_id,
+                account_id=rule.account_id,
+                is_recurring=True,
+                recurrence_rule_id=rule.id,
+            ))
+            created += 1
+    if created:
+        db.commit()
+    return created
+
+
 # ---------- Budgets ----------
 def list_budgets(db: Session, month: int, year: int) -> list[models.Budget]:
     return (

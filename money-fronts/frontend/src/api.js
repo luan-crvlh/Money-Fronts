@@ -72,6 +72,12 @@ export const api = {
     create: (data) => request("/api/budgets", { method: "POST", body: JSON.stringify(data) }),
     progress: (month, year) => request(`/api/budgets/progress?month=${month}&year=${year}`),
   },
+  recurringRules: {
+    list: () => request("/api/recurring-rules"),
+    create: (data) => request("/api/recurring-rules", { method: "POST", body: JSON.stringify(data) }),
+    remove: (id) => request(`/api/recurring-rules/${id}`, { method: "DELETE" }),
+    generate: (month, year) => request(`/api/recurring-rules/generate?month=${month}&year=${year}`, { method: "POST" }),
+  },
   dashboard: {
     summary: (month, year) => request(`/api/dashboard/summary?month=${month}&year=${year}`),
   },

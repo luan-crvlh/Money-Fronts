@@ -63,10 +63,36 @@ def get_summary(month: int, year: int, db: Session = Depends(get_db)):
             )
         )
 
+    category_rows = (
+        db.query(
+            models.Transaction.category_id,
+            models.Category.name,
+            models.Category.color,
+            func.coalesce(func.sum(models.Transaction.amount), 0),
+        )
+        .outerjoin(models.Category, models.Transaction.category_id == models.Category.id)
+        .filter(
+            models.Transaction.type == models.TransactionType.EXPENSE,
+            extract("month", models.Transaction.occurred_on) == month,
+            extract("year", models.Transaction.occurred_on) == year,
+        )
+        .group_by(models.Transaction.category_id, models.Category.name, models.Category.color)
+        .order_by(func.sum(models.Transaction.amount).desc())
+        .all()
+    )
+    category_expenses = [
+        schemas.CategoryExpense(
+            category_id=row[0], category_name=row[1] or "Sem categoria",
+            color=row[2] or "#64748B", amount=float(row[3] or 0),
+        )
+        for row in category_rows
+    ]
+
     return schemas.DashboardSummary(
         total_income=total_income,
         total_expense=total_expense,
         net_balance=net_balance,
         safe_to_spend_daily=safe_to_spend_daily,
         rule_50_30_20=rule_breakdown,
+        category_expenses=category_expenses,
     )

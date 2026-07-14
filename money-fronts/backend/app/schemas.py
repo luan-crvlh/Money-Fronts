@@ -99,6 +99,33 @@ class BudgetProgress(BaseModel):
     percentage: float
 
 
+# ---------- Recorrência ----------
+class RecurringRuleBase(BaseModel):
+    description: str = Field(min_length=1, max_length=200)
+    amount: float = Field(gt=0)
+    type: TransactionType
+    category_id: str | None = None
+    account_id: str
+    day_of_month: int = Field(ge=1, le=28)
+    active: bool = True
+
+
+class RecurringRuleCreate(RecurringRuleBase):
+    pass
+
+
+class RecurringRuleOut(RecurringRuleBase):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+
+
+class CategoryExpense(BaseModel):
+    category_id: str | None
+    category_name: str
+    color: str
+    amount: float
+
+
 # ---------- Dashboard / 50-30-20 ----------
 class RuleBreakdown(BaseModel):
     group: BudgetGroup
@@ -113,3 +140,4 @@ class DashboardSummary(BaseModel):
     net_balance: float
     safe_to_spend_daily: float
     rule_50_30_20: list[RuleBreakdown]
+    category_expenses: list[CategoryExpense]
