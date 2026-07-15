@@ -70,16 +70,22 @@ pub fn run() {
             {
                 if label == "main" {
                     let state = app_handle.state::<SidecarState>();
-                    if let Some(child) = state.0.lock().unwrap().take() {
+
+                    // Pegamos o valor e o MutexGuard já é descartado no ponto e vírgula
+                    let child_process = state.0.lock().unwrap().take(); 
+
+                    if let Some(mut child) = child_process {
                         let _ = child.kill();
-                        log::info!("Sidecar Python encerrado (kill) ao fechar a janela principal.");
                     }
                 }
             }
 
             if let RunEvent::Exit = &event {
                 let state = app_handle.state::<SidecarState>();
-                if let Some(child) = state.0.lock().unwrap().take() {
+                // Pegamos o valor e o MutexGuard já é descartado no ponto e vírgula
+                let child_process = state.0.lock().unwrap().take(); 
+
+                if let Some(mut child) = child_process {
                     let _ = child.kill();
                 }
             }

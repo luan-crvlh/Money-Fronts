@@ -1,3 +1,20 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+# --- ADICIONE ESTE BLOCO ---
+app.add_middleware(
+    CORSMiddleware,
+    # Permite todas as origens (ideal para o Tauri dev e produção)
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+# ---------------------------
+
+# O resto do seu código continua aqui (rotas, lifespans, etc)
 """
 Entrypoint do Sidecar Python (DAS seção 4).
 

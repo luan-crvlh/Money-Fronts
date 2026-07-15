@@ -52,6 +52,8 @@ def main():
             "--distpath",
             str(DIST),
             str(ROOT / "app" / "main.py"),
+            '--add-data=alembic;alembic',
+            '--add-data=alembic.ini;.',
         ],
         check=True,
     )
