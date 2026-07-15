@@ -74,7 +74,7 @@ pub fn run() {
                     // Pegamos o valor e o MutexGuard já é descartado no ponto e vírgula
                     let child_process = state.0.lock().unwrap().take(); 
 
-                    if let Some(mut child) = child_process {
+                    if let Some(child) = child_process {
                         let _ = child.kill();
                     }
                 }
@@ -85,7 +85,7 @@ pub fn run() {
                 // Pegamos o valor e o MutexGuard já é descartado no ponto e vírgula
                 let child_process = state.0.lock().unwrap().take(); 
 
-                if let Some(mut child) = child_process {
+                if let Some(child) = child_process {
                     let _ = child.kill();
                 }
             }
