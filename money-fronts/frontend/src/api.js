@@ -1,20 +1,25 @@
-// Camada de comunicação HTTP com o Sidecar Python (DAS seção 2).
-// A porta é dinâmica; o Rust a expõe via comando `get_backend_port` (invoke).
+// Import obrigatório para a comunicação com o Rust
+import { invoke } from '@tauri-apps/api/core'; 
 
-let baseUrl = null;
+// Removemos o "/api" daqui para evitar URLs duplicadas e permitir o /health na raiz
+let baseUrl = "http://127.0.0.1:8756";
+let isConfigured = false;
 
-async function resolveBaseUrl() {
-  if (baseUrl) return baseUrl;
+// Esta função substitui o seu "setupApi" e garante que o Rust seja 
+// consultado apenas uma vez.
+export async function resolveBaseUrl() {
+  if (isConfigured) return baseUrl;
 
-  // Em produção (dentro do Tauri), pergunta ao Rust qual porta foi escolhida.
-  if (window.__TAURI__) {
-    const { invoke } = window.__TAURI__.core;
-    const port = await invoke("get_backend_port");
+  try {
+    const port = await invoke('get_backend_port');
     baseUrl = `http://127.0.0.1:${port}`;
-  } else {
-    // Modo dev standalone (fora do Tauri): assume a porta fixa de fallback do main.py
-    baseUrl = "http://127.0.0.1:8756";
+    console.log(`Conectado ao backend na porta: ${port}`);
+    isConfigured = true;
+  } catch (error) {
+    console.warn("Não está no ambiente Tauri. Usando porta padrão 8756.");
+    isConfigured = true;
   }
+  
   return baseUrl;
 }
 
@@ -23,6 +28,7 @@ export async function waitForBackendHealth(maxAttempts = 40, intervalMs = 250) {
   const base = await resolveBaseUrl();
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
+      // Como o "base" não tem mais o "/api", o caminho gerado será perfeito: http://127.0.0.1:porta/health
       const res = await fetch(`${base}/health`);
       if (res.ok) return true;
     } catch (_) {
@@ -35,10 +41,13 @@ export async function waitForBackendHealth(maxAttempts = 40, intervalMs = 250) {
 
 async function request(path, options = {}) {
   const base = await resolveBaseUrl();
+  
+  // A concatenação agora ficará correta (ex: base + "/api/categories")
   const res = await fetch(`${base}${path}`, {
     headers: { "Content-Type": "application/json" },
     ...options,
   });
+  
   if (!res.ok) {
     const body = await res.text();
     throw new Error(`Erro ${res.status} em ${path}: ${body}`);

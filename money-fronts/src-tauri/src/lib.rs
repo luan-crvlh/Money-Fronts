@@ -44,12 +44,27 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![get_backend_port])
         .setup(move |app| {
             let shell = app.shell();
-            let (_rx, child) = shell
+            
+            let (mut rx, child) = shell
                 .sidecar("app-backend")
                 .expect("Falha ao localizar o binário sidecar")
                 .args(["--port", &port.to_string()])
                 .spawn()
                 .expect("Falha ao iniciar o Sidecar Python");
+
+            // --- NOVO BLOCO: Imprime os logs do Python no terminal do Tauri ---
+            tauri::async_runtime::spawn(async move {
+                use tauri_plugin_shell::process::CommandEvent;
+                while let Some(event) = rx.recv().await {
+                    match event {
+                        CommandEvent::Stdout(line) => println!("[PYTHON] {}", String::from_utf8_lossy(&line)),
+                        CommandEvent::Stderr(line) => eprintln!("[PYTHON ERR] {}", String::from_utf8_lossy(&line)),
+                        CommandEvent::Terminated(payload) => println!("[PYTHON] Backend encerrou sozinho com código: {:?}", payload.code),
+                        _ => {}
+                    }
+                }
+            });
+            // ------------------------------------------------------------------
 
             let state = app.state::<SidecarState>();
             *state.0.lock().unwrap() = Some(child);

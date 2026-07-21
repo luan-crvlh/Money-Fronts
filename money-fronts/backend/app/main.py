@@ -114,4 +114,8 @@ def main():
 
 
 if __name__ == "__main__":
+    import multiprocessing
+    # Obrigatório no Windows quando compilado via PyInstaller para evitar crash silencioso no Uvicorn
+    multiprocessing.freeze_support() 
     main()
+    # Altere host=settings.HOST para host="127.0.0.1" para garantir alinhamento com o frontend

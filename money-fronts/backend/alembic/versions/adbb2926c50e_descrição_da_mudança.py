@@ -1,8 +1,8 @@
-"""Adicionando tabela de contas
+"""descrição da mudança
 
-Revision ID: 45c3ed957457
+Revision ID: adbb2926c50e
 Revises: 0001_initial_schema
-Create Date: 2026-07-15 11:09:19.223617
+Create Date: 2026-07-21 14:05:10.383033
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '45c3ed957457'
+revision = 'adbb2926c50e'
 down_revision = '0001_initial_schema'
 branch_labels = None
 depends_on = None
