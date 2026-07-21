@@ -20,10 +20,11 @@ class CategoryCreate(CategoryBase):
 
 
 class CategoryOut(CategoryBase):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
     id: str
     is_system: bool
     created_at: datetime
+    
 
 
 # ---------- Account ----------
@@ -39,10 +40,10 @@ class AccountCreate(AccountBase):
 
 
 class AccountOut(AccountBase):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
     id: str
     created_at: datetime
-    model_config = ConfigDict(from_attributes=True)
+    
 
 
 # ---------- Transaction ----------
@@ -71,10 +72,11 @@ class TransactionUpdate(BaseModel):
 
 
 class TransactionOut(TransactionBase):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
     id: str
     is_recurring: bool
     created_at: datetime
+    
 
 
 # ---------- Budget ----------
@@ -90,8 +92,9 @@ class BudgetCreate(BudgetBase):
 
 
 class BudgetOut(BudgetBase):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
     id: str
+    
 
 
 class BudgetProgress(BaseModel):
@@ -118,8 +121,9 @@ class RecurringRuleCreate(RecurringRuleBase):
 
 
 class RecurringRuleOut(RecurringRuleBase):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
     id: str
+    
 
 
 class CategoryExpense(BaseModel):

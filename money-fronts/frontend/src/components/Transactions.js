@@ -1,5 +1,13 @@
 import { api } from "../api.js";
 
+// Função para converter o formato do banco (aaaa-mm-dd) para brasileiro (dd/mm/aaaa)
+function formatarDataBR(dataString) {
+  if (!dataString) return "";
+  const partes = dataString.split("-"); 
+  if (partes.length !== 3) return dataString; 
+  return `${partes[2]}/${partes[1]}/${partes[0]}`; 
+}
+
 export async function renderTransactions(container) {
   container.innerHTML = `<p class="muted">Carregando transações…</p>`;
 
@@ -16,7 +24,7 @@ export async function renderTransactions(container) {
     .map(
       (t) => `
       <tr>
-        <td>${t.occurred_on}</td>
+        <td>${formatarDataBR(t.occurred_on)}</td>
         <td>${t.description}</td>
         <td>${categoryName(t.category_id)}</td>
         <td>${accountName(t.account_id)}</td>

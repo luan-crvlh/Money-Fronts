@@ -35,6 +35,8 @@ def _build_engine():
         url = f"sqlite+pysqlcipher://:x@/{db_path}?cipher=aes-256-cfb&kdf_iter=64000"
         engine = create_engine(url, connect_args={"check_same_thread": False})
 
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
     @event.listens_for(engine, "connect")
     def _set_sqlite_pragmas(dbapi_connection, connection_record):
         cursor = dbapi_connection.cursor()
